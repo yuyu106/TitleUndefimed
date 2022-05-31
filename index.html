@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="yuyu">
+    <meta name="description" content="メッセージアプリ風のWebサイトです。">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta property="twitter:title" content="Message!" />
+    <meta name="twitter:description" content="メッセージアプリ風のWebサイトです。">
+    <meta name="twitter:image" content="https://yuyu106.github.io/spa_study/image/top.jpg">
+
+    <link rel="shortcut icon" href="image/usa.ico" type="image/x-icon">
+    <title>Message!</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" integrity="sha512-NhSC1YmyruXifcj/KFRWoC561YpHpc5Jtzgvbuzx5VozKpWvQ+4nXhPdFgmx8xqexRcpAglTj9sIBWINXa8x5w==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="app">
+        <header>         
+            <nav>
+                <!-- router-linkによるナビゲーション定義-->
+                <router-link to="/top">Message</router-link>
+                <router-link to="/users">Friends</router-link>
+                <router-link to="/user/info">Setting</router-link>             
+            </nav>
+            <span class="race-top"></span>          
+        </header> 
+        <router-view></router-view>
+        
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/vue-router@3.0.1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <!-- コンポーネントのテンプレート定義 -->
+    <!--トップページ-->
+    <script type="text/x-template" id="top">
+        <div class="main">
+            <div class="loading" v-if="loading">
+                <div class="loader_wrappar"><div class="loader1"></div></div>
+                <div class="loader_wrappar"><div class="loader2"></div></div>
+                <div class="loader_wrappar"><div class="loader3"></div></div>
+            </div>
+            <div class="error" v-if="error">{{error}}</div>
+            <div class="messages main-content" id="messages">
+                <div class="messages-inner main-content-inner">
+                    <transition-group tag="div" class="list"
+                    @before-enter="beforeEnter"
+                    @after-enter="afterEnter"
+                    @enter-cancelled="afterEnter">
+                        <div v-for="(msg, index) in messages" :key="msg.id" class="message"　:class="checkMyMessage(msg.userId)" :data-index="index">
+                            <router-link :to="{name: 'user', params: {userId: msg.userId}}">
+                                <div :style='iconBackground(msg.userId)' class="icon-wrappar">
+                                    <div :class='iconColor(msg.userId)' class="icon"></div>
+                                </div>
+                            </router-link>                      
+                            <p v-if="!msg.isImage" class="baloon">{{msg.message}}</p>
+                            <p v-if="msg.isImage" class="baloon baloon-img"><img  :src="msg.message" class="uploaded-img"　@click="openModal(msg.message)"></p>
+                            <div class="delete-message" v-if="msg.id > 5" @click="deleteMessage(msg.id)"><p></p></div>
+                        </div>
+                    </transition-group>
+                </div>
+            </div>
+
+            <div class="input-message-area">
+                <span class="race"></span>
+                    <div class="input-message">
+                        <div class="input-message-inner">
+                            <div class="upload">
+                                <label for="file-button" class="file-button-label"></label>
+                                <input ref="file" id="file-button" type="file" @change="upload" />
+                            </div>
+                            <div class="text">
+                                <textarea　id="textarea" v-model="message.message" 
+                                @keydown.enter.exact="keyEnter"  
+                                @keydown.enter.shift="keyEnterShift"
+                                @compositionstart="composing=true"
+                                @compositionend="composing=false"></textarea>
+                            </div>
+                            <div v-if="error" class="error">
+                                {{error}}
+                            </div>
+                            <div　class="messsage-button">
+                                <input type="button" @click="createMessage" value="send"　class="btn btn-malformation btn-malformation--pastel">
+                            </div>
+                        </div>
+                </div>
+            </div>
+
+            <div class="p-modal" :class="{'is-open': isModalActive}" @click="closeModal">
+                <div class="modal">
+                    <img  :src="modalImg">
+                </div>
+            </div>
+
+        </div>
+    </script>
+    <!--ユーザー一覧ページ-->
+    <script type="text/x-template" id="user-list">
+        <div class="main">
+            <div class="loading" v-if="loading">
+                <div class="loader_wrappar"><div class="loader1"></div></div>
+                <div class="loader_wrappar"><div class="loader2"></div></div>
+                <div class="loader_wrappar"><div class="loader3"></div></div>
+            </div>
+            <div class="error" v-if="error">{{error}}</div>
+            <div class="user-list main-content">
+                <div class="main-content-inner" id="user-list-inner">
+                    <transition-group tag="div" class="list"
+                    @before-enter="beforeEnter"
+                    @after-enter="afterEnter"
+                    @enter-cancelled="afterEnter">
+                        <div v-for="(user, index) in users" :key="user.id" class="user" id="user-list-user" :data-index="index">
+                            <router-link :to="{name: 'user', params: {userId: user.id}}"　class="user-name-icon">
+                                <div :style='iconBackground(user.id)' class="icon-wrappar">
+                                    <div :class='iconColor(user.id)' class="icon"></div>
+                                </div>  
+                                <h2 class="user-name">{{user.name}}</h2>
+                            </router-link> 
+                        </div>
+                    </transition-group>
+                </div>
+            </div>
+        </div>
+    </script>
+    <!--ユーザー詳細ページ-->
+    <script type="text/x-template" id="user-detail">
+        <div class="main">
+            <div class="loading" v-if="loading">
+                <div class="loader_wrappar"><div class="loader1"></div></div>
+                <div class="loader_wrappar"><div class="loader2"></div></div>
+                <div class="loader_wrappar"><div class="loader3"></div></div>
+            </div>
+            <div class="error" v-if="error">{{error}}</div>
+            <div class="main-content">
+                <div class="main-content-inner">
+                    <div v-if="user" class="user" id="user-detail-delay">
+                        <div class="user-name-icon">
+                            <div :style='iconBackground(user.id)' class="icon-wrappar" id="user-detail-icon">
+                                <div :class='iconColor(user.id)' class="icon"></div>
+                            </div>
+                            <h2 class="user-name" id="user-detail-name">{{user.name}}</h2>
+                        </div>
+                        <p class="user-detail-detail">{{user.description}}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </script>
+    <!--ユーザー情報ぺージ-->
+    <script type="text/x-template" id="user-info">
+        <div class="main">
+            <div class="loading" v-if="loading">
+                <div class="loader_wrappar"><div class="loader1"></div></div>
+                <div class="loader_wrappar"><div class="loader2"></div></div>
+                <div class="loader_wrappar"><div class="loader3"></div></div>
+            </div>
+            <div class="main-content">
+                <div class="main-content-inner">
+                    <div>
+                        <div v-if="user && users" class="user user-info-delay">
+                            <div class="user-name-icon">
+                                <div :style='iconBackground(user.id)' class="icon-wrappar" id="user-detail-icon">
+                                    <div :class='iconColor(user.id)' class="icon"></div>
+                                </div>
+                                <h2 class="user-name" id="user-detail-name">
+                                    <input type="text" @blur="setName" v-model="user.name">
+                                </h2>
+                            </div>
+                            <div class="selectIconBackground">
+                                <div v-for="(iconBackground, index) in iconBackgrounds" class="background">
+                                    <div :style='iconBackground.color' class="icon-wrappar" @click="changeIconbackground(iconBackground.id)"></div> 
+                                </div>
+                            </div>
+                            <p class="user-detail-detail">
+                                <textarea　@blur="setDescription" v-model="user.description"></textarea>
+                            </p>
+                        </div>
+                        <div v-if="users" class="user-info-users user-info-delay">
+                            <p class="account"> Account </p>
+                            <div v-for="(user, index) in users" class="user" id="user-info-user">
+                                <div :style='iconBackground(user.id)' class="icon-wrappar"　　@click="changeUser(user.id)">
+                                    <div :class='iconColor(user.id)' class="icon"></div>
+                                </div> 
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </script>
+
+    <script src="./script/myjs.js"></script>
+
+
+    
+
+
+
+</body>
+</html>

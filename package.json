@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "vue-axios": "^3.2.4"
+  },
+  "devDependencies": {
+    "axios": "^0.21.1"
+  }
+}
