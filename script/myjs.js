@@ -29,7 +29,7 @@ var getUser = function(axios, userId, callback) {
              .catch(error => {
                 callback(error, null)
              }) 
-    }, 1000)
+    }, 1600)
 }
 var getUsers = function(axios, callback) {
     setTimeout(function() {
@@ -40,7 +40,7 @@ var getUsers = function(axios, callback) {
              .catch(error => {
                 callback(error, null)
              }) 
-    }, 1000) 
+    }, 1600) 
 }
 var getIconBackgrounds = function(axios, callback) {
     axios.get('/iconBackgrounds')
@@ -87,9 +87,11 @@ var postUser = function(to, params, callback) {
 
 var Messages = {
     template: '#top',
+
     data: function() {
         return {
             loading: false,
+            displaying: false,
             sending: false,
             messages: function(){return []}, //初期値の空配列
             message: this.defaultMessage(),
@@ -106,6 +108,7 @@ var Messages = {
     created: function() {
         this.fetchData()
         this.isFirst = true
+        
     },
     updated: function(){
         if(!this.isFirst) {
@@ -120,8 +123,11 @@ var Messages = {
     methods: {
         fetchData: function() {
             this.loading = true
+            this.displaying = false
+            
             getUsers(this.$axios, (function(err, resUsers) {
                 this.loading = false
+                this.displaying = true
                 if (err) {
                     this.error = err.toString()
                 } else {
@@ -138,6 +144,8 @@ var Messages = {
                 }
             }
             ).bind(this))
+            
+
         },
         defaultMessage: function() {
             return {
@@ -394,6 +402,7 @@ var UserList = {
         afterEnter(el) {
             el.style.transitionDelay = ''
         },
+        
     }
 }
 

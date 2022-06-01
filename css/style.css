@@ -62,68 +62,55 @@ p {
   display: flex;
   text-align: center;
   align-items: center;
-  justify-content: center;
-  /*
-  .loader:before,
-  .loader:after {
-  content: '';
-  position: absolute;
-  top: 0;
-  } */ }
+  justify-content: center; }
   .loading .loader_wrappar {
     display: inline-block;
     height: 36px;
     margin: 2px; }
-  .loading .loader1,
-  .loading .loader2,
-  .loading .loader3
-   {
-    border-radius: 30%;
+  .loading .loader-left,
+  .loading .loader-center,
+  .loading .loader-right {
     width: 36px;
     height: 36px;
     background-size: cover;
     -webkit-animation-fill-mode: both;
     animation-fill-mode: both;
-    -webkit-animation: load7 2.4s infinite;
-    animation: load7 2.4s infinite; }
-  .loading .loader2 {
-    color: #99A8ce;
-    content: '';
-    font-size: 36px;
-    line-height: 36px;
-    position: relative;
-    -webkit-transform: translateZ(0);
-    -ms-transform: translateZ(0);
-    transform: translateZ(0);
+    -webkit-animation: load 2.0s infinite;
+    animation: load 2.0s infinite; }
+  .loading .loader-center {
     -webkit-animation-delay: 0.32s;
     animation-delay: 0.32s;
     background-image: url(../image/EarCuff_180.png); }
-  .loading .loader1 {
-    left: -24px;
+  .loading .loader-left {
     -webkit-animation-delay: 0.16s;
     animation-delay: 0.16s;
     background-image: url(../image/EarCuff.png); }
-  .loading .loader3 {
-    left: 24px;
+  .loading .loader-right {
     -webkit-animation-delay: 0.48s;
     animation-delay: 0.48s;
     background-image: url(../image/EarCuff.png); }
-@-webkit-keyframes load7 {
+@-webkit-keyframes load {
   0% {
     transform: rotate(0deg); }
-  80%,
-    100% {
-    transform: rotate(360deg); }
   40% {
-    transform: rotate(180deg); } }
-@keyframes load7 {
+    transform: rotate(180deg); }
+  80%,
+        100% {
+    transform: rotate(360deg); } }
+@keyframes load {
   0% {
     transform: rotate(0deg); }
-  80%,
-    100% {
-    transform: rotate(360deg); }
   40% {
-    transform: rotate(180deg); } }
+    transform: rotate(180deg); }
+  80%,
+        100% {
+    transform: rotate(360deg); } }
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s; }
+
+.fade-enter, .fade-leave-to {
+  opacity: 0; }
+
 /* ヘッダー (共通) */
 header {
   font-family: 'Josefin Sans', sans-serif;
@@ -136,12 +123,12 @@ header {
   z-index: 100; }
   header nav {
     background: white;
-    padding: 8px;
-    padding-top: 12px;
+    padding: 12px;
+    padding-top: 24px;
     display: flex;
     justify-content: center; }
     header nav a:link, header nav a:visited, header nav a:hover, header nav a:active {
-      color: #c2a2b6;
+      color: #9E7360;
       text-decoration: none;
       padding: 0 8px 0 8px; }
       @media (min-width: 550px) {
@@ -196,9 +183,42 @@ header {
     text-align: left; }
     @media (min-width: 550px) {
       .main-content .main-content-inner {
-        width: 50%; } }
+        width: 80%; } }
 
 /* トップページ */
+.welcome-message {
+  text-align: center;
+  padding: 12px; }
+  .welcome-message p {
+    color: #9E7360;
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 18px;
+    font-weight: 400; }
+
+.top-menu {
+  color: #491A00; }
+  .top-menu .top-menu-category {
+    text-align: center;
+    align-items: center;
+    margin-bottom: 48px; }
+  .top-menu h3, .top-menu h4 {
+    font-family: 'Josefin Sans', sans-serif;
+    font-weight: 400; }
+  .top-menu h3 {
+    font-size: 24px;
+    margin: 0;
+    margin-bottom: 16px; }
+  .top-menu h4 {
+    font-size: 18px;
+    margin: 0;
+    margin-bottom: 12px; }
+  @media (min-width: 550px) {
+    .top-menu {
+      display: flex;
+      justify-content: center; }
+      .top-menu .top-menu-category {
+        width: 180px; } }
+
 .messages .messages-inner .message {
   display: flex;
   justify-content: start;

@@ -4,15 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="author" content="yuyu">
-    <meta name="description" content="メッセージアプリ風のWebサイトです。">
+    <meta name="description" content="倉庫">
 
     <meta name="twitter:card" content="summary_large_image">
-    <meta property="twitter:title" content="Message!" />
-    <meta name="twitter:description" content="メッセージアプリ風のWebサイトです。">
-    <meta name="twitter:image" content="https://yuyu106.github.io/spa_study/image/top.jpg">
+    <meta property="twitter:title" content="Title undefined" />
+    <meta name="twitter:description" content="倉庫">
+    <meta name="twitter:image" content="https://yuyu106.github.io/TitleUndefined/image/top.jpg">
 
     <link rel="shortcut icon" href="image/usa.ico" type="image/x-icon">
-    <title>Message!</title>
+    <title>Title undefined</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" integrity="sha512-NhSC1YmyruXifcj/KFRWoC561YpHpc5Jtzgvbuzx5VozKpWvQ+4nXhPdFgmx8xqexRcpAglTj9sIBWINXa8x5w==" crossorigin="anonymous" />
     <link rel="stylesheet" href="css/style.css">
 </head>
@@ -39,12 +39,41 @@
     <!--トップページ-->
     <script type="text/x-template" id="top">
         <div class="main">
+            <transition name="fade">
             <div class="loading" v-if="loading">
-                <div class="loader_wrappar"><div class="loader1"></div></div>
-                <div class="loader_wrappar"><div class="loader2"></div></div>
-                <div class="loader_wrappar"><div class="loader3"></div></div>
+                <div class="loader_wrappar"><div class="loader-left"></div></div>
+                <div class="loader_wrappar"><div class="loader-center"></div></div>
+                <div class="loader_wrappar"><div class="loader-right"></div></div>
             </div>
-            <div class="error" v-if="error">{{error}}</div>
+            </transition>
+            <transition name="fade">
+            <div class="main-content" v-if="displaying">
+                <div class="main-content-inner">
+                    <div class="welcome-message"><p>❤︎ Thank you for visiting ❤︎</p></div>
+                    <div class="top-menu">
+                        <div class="top-menu-category">
+                            <h3>Illustration</h3>
+                            <h4>BEA*TR*IL</h4>
+                            <h4>dans*i</h4>
+                            <h4>Original</h4>
+                            <h4>〜2020</h4>
+                            <h4>All</h4>
+                        </div>
+                        <div class="top-menu-category">
+                            <h3>Photo</h3>
+                            <h4>All</h4>
+                        </div>
+                        <div class="top-menu-category">
+                            <h3>About</h3>
+                            <h4>Profile</h4>
+                            <h4>History</h4>
+                            <h4>Other</h4>
+                        </div>
+                    </div>
+                </div>
+            <div>
+            </transition>
+            <!--div class="error" v-if="error">{{error}}</div>
             <div class="messages main-content" id="messages">
                 <div class="messages-inner main-content-inner">
                     <transition-group tag="div" class="list"
@@ -94,7 +123,7 @@
                 <div class="modal">
                     <img  :src="modalImg">
                 </div>
-            </div>
+            </div-->
 
         </div>
     </script>
@@ -102,9 +131,9 @@
     <script type="text/x-template" id="user-list">
         <div class="main">
             <div class="loading" v-if="loading">
-                <div class="loader_wrappar"><div class="loader1"></div></div>
-                <div class="loader_wrappar"><div class="loader2"></div></div>
-                <div class="loader_wrappar"><div class="loader3"></div></div>
+                <div class="loader_wrappar"><div class="loader-left"></div></div>
+                <div class="loader_wrappar"><div class="loader-center"></div></div>
+                <div class="loader_wrappar"><div class="loader-right"></div></div>
             </div>
             <div class="error" v-if="error">{{error}}</div>
             <div class="user-list main-content">
@@ -130,9 +159,9 @@
     <script type="text/x-template" id="user-detail">
         <div class="main">
             <div class="loading" v-if="loading">
-                <div class="loader_wrappar"><div class="loader1"></div></div>
-                <div class="loader_wrappar"><div class="loader2"></div></div>
-                <div class="loader_wrappar"><div class="loader3"></div></div>
+                <div class="loader_wrappar"><div class="loader-left"></div></div>
+                <div class="loader_wrappar"><div class="loader-center"></div></div>
+                <div class="loader_wrappar"><div class="loader-right"></div></div>
             </div>
             <div class="error" v-if="error">{{error}}</div>
             <div class="main-content">
@@ -154,9 +183,9 @@
     <script type="text/x-template" id="user-info">
         <div class="main">
             <div class="loading" v-if="loading">
-                <div class="loader_wrappar"><div class="loader1"></div></div>
-                <div class="loader_wrappar"><div class="loader2"></div></div>
-                <div class="loader_wrappar"><div class="loader3"></div></div>
+                <div class="loader_wrappar"><div class="loader-left"></div></div>
+                <div class="loader_wrappar"><div class="loader-center"></div></div>
+                <div class="loader_wrappar"><div class="loader-right"></div></div>
             </div>
             <div class="main-content">
                 <div class="main-content-inner">
