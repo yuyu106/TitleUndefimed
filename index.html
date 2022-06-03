@@ -14,6 +14,7 @@
     <link rel="shortcut icon" href="image/usa.ico" type="image/x-icon">
     <title>Title undefined</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" integrity="sha512-NhSC1YmyruXifcj/KFRWoC561YpHpc5Jtzgvbuzx5VozKpWvQ+4nXhPdFgmx8xqexRcpAglTj9sIBWINXa8x5w==" crossorigin="anonymous" />
+    <link rel ="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -21,14 +22,12 @@
         <header>         
             <nav>
                 <!-- router-linkによるナビゲーション定義-->
-                <router-link to="/top">Message</router-link>
-                <router-link to="/users">Friends</router-link>
-                <router-link to="/user/info">Setting</router-link>             
+                <div class="title"><router-link to="/top">Title Undefined</router-link></div>
+                <a href="https://twitter.com/yuyu_106" target="_blank"><i class="fa-solid fa-comment"></i></a>       
             </nav>
             <span class="race-top"></span>          
         </header> 
-        <router-view></router-view>
-        
+        <router-view></router-view>    
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
@@ -49,29 +48,35 @@
             <transition name="fade">
             <div class="main-content" v-if="displaying">
                 <div class="main-content-inner">
-                    <div class="welcome-message"><p>❤︎ Thank you for visiting ❤︎</p></div>
-                    <div class="top-menu">
+                    <div class="welcome-message">
+                        <p>❤︎ Thank you for visiting ❤︎</p>
+                    </div>
+                    <nav><div class="top-menu">
                         <div class="top-menu-category">
                             <h3>Illustration</h3>
-                            <h4>BEA*TR*IL</h4>
-                            <h4>dans*i</h4>
-                            <h4>Original</h4>
-                            <h4>〜2020</h4>
-                            <h4>All</h4>
+                            <router-link to="/illustration/all"><h4><span>All</span></h4></router-link>
+                            <router-link to="/illustration/beast"><h4><i class="fa-solid fa-paw"></i> <span>BEA*TR*IL</span> <i class="fa-solid fa-paw"></i></h4></router-link>
+                            <router-link to="/illustration/dns"><h4><span>#dans*i</span></h4></router-link>
+                            <router-link to="/illustration/dny"><h4><i class="fa-brands fa-fort-awesome"></i> <span>Disn*y</span> <i class="fa-solid fa-volcano"></i></h4></router-link>
+                            <router-link to="/illustration/original"><h4><span>Original</span></h4></router-link>
                         </div>
                         <div class="top-menu-category">
                             <h3>Photo</h3>
-                            <h4>All</h4>
+                            <router-link to="/top"><h4><span>All</span></h4></router-link>
                         </div>
                         <div class="top-menu-category">
-                            <h3>About</h3>
-                            <h4>Profile</h4>
-                            <h4>History</h4>
-                            <h4>Other</h4>
+                            <router-link to="/users"><h3>About</h3></router-link>
+                            <router-link to="/top"><h4><span>Profile</span></h4></router-link>
+                            <router-link to="/user/info"><h4><span>History</span></h4></router-link>
+                            <router-link to="/top"><h4><span>Other</span></h4></router-link>
+                            <h4>
+                                <a href="https://twitter.com/yuyu_106" target="_blank"><i class="fa-brands fa-twitter top-menu-twitter"></i></a>
+                                <a href="https://twitter.com/yuzuDns" target="_blank"><i class="fa-brands fa-twitter top-menu-twitter"></i></a>
+                            </h4>
                         </div>
-                    </div>
+                    </div></nav>
                 </div>
-            <div>
+            </div>
             </transition>
             <!--div class="error" v-if="error">{{error}}</div>
             <div class="messages main-content" id="messages">
@@ -125,6 +130,45 @@
                 </div>
             </div-->
 
+        </div>
+    </script>
+    <!--イラストページ-->
+    <script type="text/x-template" id="illustration">
+        <div class="main">
+            <transition name="fade"><div class="loading" v-if="loading">
+                <div class="loader_wrappar"><div class="loader-left"></div></div>
+                <div class="loader_wrappar"><div class="loader-center"></div></div>
+                <div class="loader_wrappar"><div class="loader-right"></div></div>
+            </div></transition>
+            <transition name="fade"><div class="user-list main-content" v-if="displaying">
+                <div>
+                    <div class="category">
+                        <div class="category-arrow"><div><i class="fa-solid fa-caret-down"></i></div></div>
+                        <input id="category-checkbox" class="category-checkbox" type="checkbox" v-model="checked">
+                        <label class="selected-category" for="category-checkbox">{{selectedCategory}}</label>
+                        <ul class="category-list">
+                            <li v-for="category in categoryList" class="category-list-item">
+                                <router-link :to="{name: 'illustration', params: {category: category.urlParams}}">{{category.name}}</router-link>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="menu-and-illust">
+                        <div class="category-menu">
+                            <h3>Illustration</h3>
+                            <ul class="category-menu-list">
+                                <li v-for="category in categoryList" class="category-menu-item">
+                                    <router-link :to="{name: 'illustration', params: {category: category.urlParams}}">{{category.name}}</router-link>
+                                </li>
+                            </ul>
+                        </div>
+                        <!--ul class="illustration-list"-->
+                            <transition-group name="fade"  tag="ul" class="illustration-list">
+                                <li v-for="image in imageList" :style="{backgroundImage: 'url(' + image.path + ')'}" :key="image.idx" class="illustration-item"></li>
+                            </transition-group>
+                        <!--/ul-->
+                    </div>
+                </div>
+            </div></transition>
         </div>
     </script>
     <!--ユーザー一覧ページ-->

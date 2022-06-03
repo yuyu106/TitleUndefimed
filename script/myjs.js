@@ -1,4 +1,4 @@
-Vue.config.productionTip = false
+/*Vue.config.productionTip = false
 axios.defaults.baseURL = 'http://localhost:8080/';
 Vue.prototype.$axios = axios;
 axios.defaults.withCredentials = true;
@@ -7,115 +7,419 @@ axios.interceptors.request.use(request => {
     console.log('Starting Request: ', request)
     return request
   })
-
+*/
 var myId = 1
 
+var waitLoading = function(callback) {
+    setTimeout(function() {callback();}, 1000) 
+}
+
 //WebAPI経由で情報を取得したようにする
+//カテゴリ取得
+var getCategoryList = function(category, callback) {
+    var req = new XMLHttpRequest(); // HTTPでファイルを読み込むためのXMLHttpRrequestオブジェクトを生成
+    req.open("get", "./config/category.csv", true); // アクセスするファイルを指定
+    req.send(null); // HTTPリクエストの発行
+    var result = [];
+
+    req.onload = function() {
+        //取得したCSVを配列に変換
+        result = convertCSVtoArray(req.responseText);
+        //カテゴリ1が一致する項目のみ取得
+        result = result.filter(function(value) {
+            return value[0] === category;  
+        })
+    }
+    setTimeout(function() {
+        callback(result)
+    }, 1200)
+}
+//画像取得
+var getImages = function(category1, category2,  callback) {
+    var req = new XMLHttpRequest(); // HTTPでファイルを読み込むためのXMLHttpRrequestオブジェクトを生成
+    req.open("get", "./config/imgInfo.csv", true); // アクセスするファイルを指定
+    req.send(null); // HTTPリクエストの発行
+    var result = [];
+
+    req.onload = function() {
+        //取得したCSVを配列に変換
+        result = convertCSVtoArray(req.responseText);
+        //カテゴリが一致する項目のみ取得
+        if(category2 === "all") {
+            result = result.filter(function(value) {
+                return value[4] == category1;  
+            }) 
+        } else {
+            result = result.filter(function(value) {
+                return (value[4] === category1 && value[6] === category2);  
+            })
+        }
+        //日付順で並び替え
+        result.sort(function(a,b){
+            if(a[3] < b[3]) return 1;
+            if(a[3] > b[3]) return -1;
+            return 0;
+        })
+    }
+    setTimeout(function() {
+        console.log("result = " + result)
+        callback(result)
+    }, 1200)
+}
+
+function convertCSVtoArray(str){ // 読み込んだCSVデータが文字列として渡される
+    var result = []; // 最終的な二次元配列を入れるための配列
+    var tmp = str.split("\n"); // 改行を区切り文字として行を要素とした配列を生成
+ 
+    // 各行ごとにカンマで区切った文字列を要素とした二次元配列を生成
+    //ヘッダー行は除外
+    for(var i=1;i<tmp.length;++i){
+        result[i] = tmp[i].split("\",\"");
+        result[i].forEach((e, idx) => {
+            result[i][idx] = e.replace("\"", "");
+        });
+    }
+    return result;
+}
+
 var getMessages = function(axios, callback) {
-    axios.get('/messages')
-         .then(response => {
-            callback(null, response.data);
-         })
-         .catch(error => {
-            callback(error, null)
-         })
+    // axios.get('/messages')
+    //      .then(response => {
+    //         callback(null, response.data);
+    //      })
+    //      .catch(error => {
+    //         callback(error, null)
+    //      })
 }
 var getUser = function(axios, userId, callback) {
     setTimeout(function() {
-        axios.get('/user/' + userId)
-             .then(response => {
-                callback(null, response.data[0]);
-             })
-             .catch(error => {
-                callback(error, null)
-             }) 
-    }, 1600)
+        // axios.get('/user/' + userId)
+        //      .then(response => {
+        //         callback(null, response.data[0]);
+        //      })
+        //      .catch(error => {
+        //         callback(error, null)
+        //      }) 
+    }, 1200)
 }
-var getUsers = function(axios, callback) {
-    setTimeout(function() {
-        axios.get('/users')
-             .then(response => {
-                callback(null, response.data);
-             })
-             .catch(error => {
-                callback(error, null)
-             }) 
-    }, 1600) 
-}
+
 var getIconBackgrounds = function(axios, callback) {
-    axios.get('/iconBackgrounds')
-         .then(response => {
-            callback(null, response.data);
-         })
-         .catch(error => {
-            console.log(error)
-         }) 
+    // axios.get('/iconBackgrounds')
+    //      .then(response => {
+    //         callback(null, response.data);
+    //      })
+    //      .catch(error => {
+    //         console.log(error)
+    //      }) 
 }
 //API経由で情報を更新したようにする
 var postMsg = function(to, params, callback) {
-    const axiosApi = axios.create({
-        headers: {
-            /* JSON形式にすると何故か失敗するのでtext形式で送る */
-            'Content-Type':'text/plain;charset=utf-8'
-        }
-    }) 
+    // const axiosApi = axios.create({
+    //     headers: {
+    //         /* JSON形式にすると何故か失敗するのでtext形式で送る */
+    //         'Content-Type':'text/plain;charset=utf-8'
+    //     }
+    // }) 
 
-    axiosApi.post(to, params)
-            .then(response => {
-                callback(null, response.data[0]);
-            })
-            .catch(error => {
-                callback(error, null)
-            }) 
+    // axiosApi.post(to, params)
+    //         .then(response => {
+    //             callback(null, response.data[0]);
+    //         })
+    //         .catch(error => {
+    //             callback(error, null)
+    //         }) 
 }
 var postUser = function(to, params, callback) {
-    const axiosApi = axios.create({
-        headers: {
-            /* JSON形式にすると何故か失敗するのでtext形式で送る */
-            'Content-Type':'text/plain;charset=utf-8'
-        }
-    }) 
+    // const axiosApi = axios.create({
+    //     headers: {
+    //         /* JSON形式にすると何故か失敗するのでtext形式で送る */
+    //         'Content-Type':'text/plain;charset=utf-8'
+    //     }
+    // }) 
 
-    axiosApi.post(to, params)
-            .then(response => {
-                callback(null, response.data);
-            })
-            .catch(error => {
-                callback(error, null)
-            }) 
+    // axiosApi.post(to, params)
+    //         .then(response => {
+    //             callback(null, response.data);
+    //         })
+    //         .catch(error => {
+    //             callback(error, null)
+    //         }) 
+    
 }
 
-var Messages = {
-    template: '#top',
+// var Messages = {
+//     template: '#top',
 
+//     data: function() {
+//         return {
+//             loading: false,
+//             displaying: false,
+//             sending: false,
+//             messages: function(){return []}, //初期値の空配列
+//             message: this.defaultMessage(),
+//             error: null,
+//             isFirst: false,
+//             composing: false,
+//             users: function(){return []}, //初期値の空配列
+//             file: null,
+//             isModalActive: false,
+//             modalImg: null
+//         }
+//     },
+//     //初期化時にデータを取得
+//     created: function() {
+//         this.fetchData()
+//         this.isFirst = true
+        
+//     },
+//     updated: function(){
+//         if(!this.isFirst) {
+//             var element = document.documentElement
+//             var bottom = element.scrollHeight - element.clientHeight
+//             window.scroll(0, bottom)
+//         }  
+//     },
+//     watch: {
+//         '$route': 'fetchData'
+//     },
+//     methods: {
+//         fetchData: function() {
+//             this.loading = true
+//             this.displaying = false
+            
+//             getUsers(this.$axios, (function(err, resUsers) {
+//                 this.loading = false
+//                 this.displaying = true
+//                 if (err) {
+//                     this.error = err.toString()
+//                 } else {
+//                     this.users = resUsers;
+
+//                     getMessages(this.$axios, (async function(err, messages) {
+//                         this.loading = false
+//                         if (err) {
+//                             this.error = err.toString()
+//                         } else {
+//                             this.messages = messages
+//                         }
+//                     }).bind(this))    
+//                 }
+//             }
+//             ).bind(this))
+            
+
+//         },
+//         defaultMessage: function() {
+//             return {
+//                 id: '',
+//                 userId: myId,
+//                 message: '',
+//                 isImage: false
+//             }
+//         },
+//         createMessage: function(){
+//             this.isFirst = false
+//             var textarea = document.getElementById('textarea');
+//             var messagesArea = document.getElementById('messages');
+//             var inputArea = document.getElementsByClassName('input-message-inner');
+//             textarea.style.height = '24px'
+//             messagesArea.style.paddingBottom = '88px'
+//             inputArea[0].style.alignItems = "center"
+//             this.message.isImage = false
+//             if(this.message.message.trim() === ''){
+//                 return
+//             }
+//             postMsg("/addMessage", this.message, (function(err, resMsg) {
+//                 this.sending = false
+//                 if(err) {
+//                     this.error = err.toString()
+//                 } else {
+//                     this.error = null
+//                     this.messages.push({
+//                         id: resMsg.id,
+//                         userId: resMsg.userId,
+//                         message: resMsg.message,
+//                         isImage: false
+//                     });
+//                     this.message = this.defaultMessage() 
+//                 }
+//             }).bind(this)) 
+//         },
+//         deleteMessage: function(id){
+//             var selectMessage = this.messages.filter(msg => msg.id === id)
+//             var index = this.messages.indexOf(selectMessage[0])
+
+//             postMsg("/deleteMessage", this.messages[index], (function(err, resMsg) {
+//                 if(err) {
+//                     this.error = err.toString()
+//                 } else {
+//                     this.error = null 
+//                     this.messages.splice(index, 1); 
+//                 }
+//             }).bind(this)) 
+
+//         },
+
+//         iconColor: function(userId) {
+//             if(this.users[0]) {
+//                 var selectUser = this.users.filter(user => user.id === userId)
+//                 return selectUser[0].icon
+//             }
+//             return null; 
+//         },
+//         iconBackground: function(userId) {
+//             if(this.users[0]) {
+//                 var selectUser = this.users.filter(user => user.id === userId)
+//                 var selectColor = iconBackgrounds.filter(color => color.id === selectUser[0].iconBackground)
+//                 return selectColor[0].color
+//             }
+//             return null; 
+//         },
+
+//         keyEnter: function(event) {
+//             if (event.keyCode !== 13) return
+//             var ut = navigator.userAgent;
+//             if(ut.indexOf('iPhone') > 0 || ut.indexOf('iPod') > 0 || ut.indexOf('iPad') > 0 || ut.indexOf('Android') > 0 && ut.indexOf('Mobile') > 0) {
+//                 if(this.composing) {
+//                     return
+//                 }
+//                 else {
+//                     this.setTextareaHeight()
+//                     return
+//                 }
+//             }
+//             this.createMessage()
+//         },
+//         keyEnterShift: function(event) {
+//             var ut = navigator.userAgent;
+//             if(ut.indexOf('iPhone') > 0 || ut.indexOf('iPod') > 0 || ut.indexOf('iPad') > 0 || ut.indexOf('Android') > 0 && ut.indexOf('Mobile') > 0) return
+//             this.setTextareaHeight()
+//         },
+//         setTextareaHeight: function(event) {     
+//             var textarea = document.getElementById('textarea');
+//             var messages = document.getElementById('messages');
+//             var inputArea = document.getElementsByClassName('input-message-inner');
+//             var height = parseInt(window.getComputedStyle(textarea).height);
+//             var margin = parseInt(window.getComputedStyle(messages).paddingBottom);
+
+//             height += 24
+//             if(height <  parseInt(window.getComputedStyle(textarea).maxHeight)) {
+//                 margin += 24
+//             }
+//             textarea.style.height = height + 'px'
+//             messages.style.paddingBottom = margin + 'px'
+//             inputArea[0].style.alignItems = "flex-end"
+//         },
+
+//         // トランジション開始でインデックス*100ms分のディレイを付与
+//         beforeEnter: function(el) {
+//             if (!this.isFirst) {el.dataset.index = 0}
+//             el.style.transitionDelay = 100 * parseInt(el.dataset.index, 10) + 'ms'
+//         },
+//         // トランジション完了またはキャンセルでディレイを削除
+//         afterEnter(el) {
+//             el.style.transitionDelay = ''
+//         },
+
+//         //画像投稿
+//         async upload(event) {
+//             const files = event.target.files || event.dataTransfer.files
+//             const file = files[0]
+
+//             //選択されたファイルが条件を満たしているかチェック
+//             if (this.checkFile(file)) {
+//                 //getBase64が終わるまで待つ
+//                 const picture = await this.getBase64(file)
+
+//                 this.isFirst = false
+//                 var imgMsg = {
+//                     id: null,
+//                     userId: myId,
+//                     message: picture,
+//                     isImage: true
+//                 }
+
+//                 postMsg("/addMessage", imgMsg , (function(err, resMsg) {
+//                     this.sending = false
+//                     if(err) {
+//                         this.error = err.toString()
+//                     } else {
+//                         this.error = null
+//                         this.messages.push({
+//                             id: resMsg.id,
+//                             userId: resMsg.userId,
+//                             message: picture,
+//                             isImage: true
+//                         });
+//                     }
+//                 }).bind(this)) 
+//             }
+//         },
+//         getBase64(file) {
+//             /*
+//              * resolve：処理が成功したときのメッセージを表示する関数
+//              * reject：処理が失敗したときのメッセージを表示する関数
+//              */
+//             return new Promise((resolve, reject) => {
+//                 const reader = new FileReader()
+//                 //resultにァイルのデータを表すURLが格納される
+//                 reader.readAsDataURL(file)
+
+//                 reader.onload = () => resolve(reader.result)
+//                 reader.onerror = error => reject(error)
+//             })
+//         },
+//         checkFile(file) {
+//             let result = true
+//             const SIZE_LIMIT = 5000000 // 5MB
+//             // キャンセルしたら処理中断
+//             if (!file) {
+//                 result = false
+//             }
+//             // jpeg か png 関連ファイル以外は受付けない
+//             if (file.type !== 'image/jpeg' && file.type !== 'image/jpg'　&& file.type !== 'image/png') {
+//                 result = false
+//             }
+//             // 上限サイズより大きければ受付けない
+//             if (file.size > SIZE_LIMIT) {
+//                 result = false
+//             }
+//             return result
+//         },
+//         openModal: function(img) {
+//             this.modalImg = img
+//             this.isModalActive = true;
+//         },
+//         closeModal: function() {
+//             modalImg = null
+//             this.isModalActive = false;
+//         }
+//     },
+//     computed: {
+//         checkMyMessage: function() {
+//             return function(userId) {
+//                 if(userId === myId) return "myMessage"
+//                 return
+//             }    
+//         }
+//     }
+// }
+
+/*************
+  トップページ
+**************/
+var TopMenu = {
+    template: '#top',
     data: function() {
         return {
             loading: false,
             displaying: false,
-            sending: false,
-            messages: function(){return []}, //初期値の空配列
-            message: this.defaultMessage(),
             error: null,
-            isFirst: false,
-            composing: false,
-            users: function(){return []}, //初期値の空配列
-            file: null,
-            isModalActive: false,
-            modalImg: null
         }
     },
     //初期化時にデータを取得
     created: function() {
         this.fetchData()
-        this.isFirst = true
-        
-    },
-    updated: function(){
-        if(!this.isFirst) {
-            var element = document.documentElement
-            var bottom = element.scrollHeight - element.clientHeight
-            window.scroll(0, bottom)
-        }  
     },
     watch: {
         '$route': 'fetchData'
@@ -123,223 +427,98 @@ var Messages = {
     methods: {
         fetchData: function() {
             this.loading = true
-            this.displaying = false
-            
-            getUsers(this.$axios, (function(err, resUsers) {
+            waitLoading((function() {
                 this.loading = false
                 this.displaying = true
-                if (err) {
-                    this.error = err.toString()
-                } else {
-                    this.users = resUsers;
-
-                    getMessages(this.$axios, (async function(err, messages) {
-                        this.loading = false
-                        if (err) {
-                            this.error = err.toString()
-                        } else {
-                            this.messages = messages
-                        }
-                    }).bind(this))    
-                }
-            }
-            ).bind(this))
+            }).bind(this))
             
+        }
+    }
+}
 
-        },
-        defaultMessage: function() {
-            return {
-                id: '',
-                userId: myId,
-                message: '',
-                isImage: false
-            }
-        },
-        createMessage: function(){
-            this.isFirst = false
-            var textarea = document.getElementById('textarea');
-            var messagesArea = document.getElementById('messages');
-            var inputArea = document.getElementsByClassName('input-message-inner');
-            textarea.style.height = '24px'
-            messagesArea.style.paddingBottom = '88px'
-            inputArea[0].style.alignItems = "center"
-            this.message.isImage = false
-            if(this.message.message.trim() === ''){
-                return
-            }
-            postMsg("/addMessage", this.message, (function(err, resMsg) {
-                this.sending = false
-                if(err) {
-                    this.error = err.toString()
-                } else {
-                    this.error = null
-                    this.messages.push({
-                        id: resMsg.id,
-                        userId: resMsg.userId,
-                        message: resMsg.message,
-                        isImage: false
+/******************
+  イラスト表示ページ
+*******************/
+var Illustration = {
+    template: '#illustration',
+    data: function() {
+        return {
+            loading: false,
+            displaying: false,
+            selectedCategory: "",
+            categoryList: "",
+            imageList: "",
+            checked: false,
+            error: null,
+        }
+    },
+    //初期化時にデータを取得
+    created: function() {
+        this.displaying = false;
+        this.fetchData()
+    },
+    watch: {
+        '$route': 'fetchData'
+    },
+    methods: {
+        fetchData: function() {
+            this.imageList = "";
+            //ローディングアニメーションの表示
+            this.loading = true
+            //ドロップダウンメニュー非表示
+            this.checked = false;
+            //カテゴリー取得
+            var resCategoryList = [];
+            getCategoryList("illustration", (function(res){
+                this.loading = false
+                this.displaying = true
+
+                resCategoryList.push({
+                    name: "All",
+                    urlParams: "all"
+                });
+                res.forEach(element => {
+                    resCategoryList.push({
+                        name: element[1],
+                        urlParams: element[2]
                     });
-                    this.message = this.defaultMessage() 
-                }
-            }).bind(this)) 
-        },
-        deleteMessage: function(id){
-            var selectMessage = this.messages.filter(msg => msg.id === id)
-            var index = this.messages.indexOf(selectMessage[0])
-
-            postMsg("/deleteMessage", this.messages[index], (function(err, resMsg) {
-                if(err) {
-                    this.error = err.toString()
-                } else {
-                    this.error = null 
-                    this.messages.splice(index, 1); 
-                }
-            }).bind(this)) 
-
-        },
-
-        iconColor: function(userId) {
-            if(this.users[0]) {
-                var selectUser = this.users.filter(user => user.id === userId)
-                return selectUser[0].icon
-            }
-            return null; 
-        },
-        iconBackground: function(userId) {
-            if(this.users[0]) {
-                var selectUser = this.users.filter(user => user.id === userId)
-                var selectColor = iconBackgrounds.filter(color => color.id === selectUser[0].iconBackground)
-                return selectColor[0].color
-            }
-            return null; 
+                })
+                var selectedCategoryInfo = resCategoryList.find((v) => v.urlParams === this.$route.params.category)
+                this.categoryList = resCategoryList
+                this.selectedCategory = selectedCategoryInfo.name
+            }).bind(this));
+            //画像取得
+            var resImageList = [];
+            getImages("illustration", this.$route.params.category, (function(res){
+                this.loading = false
+                this.displaying = true
+                res.forEach(element => {
+                    console.log(element);
+                    resImageList.push({
+                        idx: element[0],
+                        path: element[1],
+                        fileName: element[2],
+                        day: element[3],
+                        category1: element[4],
+                        category2: element[5],
+                        category3: element[6],
+                        detail: element[7]
+                    });
+                })
+                this.imageList = resImageList;
+            }).bind(this));
         },
 
-        keyEnter: function(event) {
-            if (event.keyCode !== 13) return
-            var ut = navigator.userAgent;
-            if(ut.indexOf('iPhone') > 0 || ut.indexOf('iPod') > 0 || ut.indexOf('iPad') > 0 || ut.indexOf('Android') > 0 && ut.indexOf('Mobile') > 0) {
-                if(this.composing) {
-                    return
-                }
-                else {
-                    this.setTextareaHeight()
-                    return
-                }
-            }
-            this.createMessage()
-        },
-        keyEnterShift: function(event) {
-            var ut = navigator.userAgent;
-            if(ut.indexOf('iPhone') > 0 || ut.indexOf('iPod') > 0 || ut.indexOf('iPad') > 0 || ut.indexOf('Android') > 0 && ut.indexOf('Mobile') > 0) return
-            this.setTextareaHeight()
-        },
-        setTextareaHeight: function(event) {     
-            var textarea = document.getElementById('textarea');
-            var messages = document.getElementById('messages');
-            var inputArea = document.getElementsByClassName('input-message-inner');
-            var height = parseInt(window.getComputedStyle(textarea).height);
-            var margin = parseInt(window.getComputedStyle(messages).paddingBottom);
 
-            height += 24
-            if(height <  parseInt(window.getComputedStyle(textarea).maxHeight)) {
-                margin += 24
-            }
-            textarea.style.height = height + 'px'
-            messages.style.paddingBottom = margin + 'px'
-            inputArea[0].style.alignItems = "flex-end"
-        },
-
-        // トランジション開始でインデックス*100ms分のディレイを付与
+         // トランジション開始でインデックス*100ms分のディレイを付与
         beforeEnter: function(el) {
-            if (!this.isFirst) {el.dataset.index = 0}
             el.style.transitionDelay = 100 * parseInt(el.dataset.index, 10) + 'ms'
         },
         // トランジション完了またはキャンセルでディレイを削除
         afterEnter(el) {
             el.style.transitionDelay = ''
         },
-
-        //画像投稿
-        async upload(event) {
-            const files = event.target.files || event.dataTransfer.files
-            const file = files[0]
-
-            //選択されたファイルが条件を満たしているかチェック
-            if (this.checkFile(file)) {
-                //getBase64が終わるまで待つ
-                const picture = await this.getBase64(file)
-
-                this.isFirst = false
-                var imgMsg = {
-                    id: null,
-                    userId: myId,
-                    message: picture,
-                    isImage: true
-                }
-
-                postMsg("/addMessage", imgMsg , (function(err, resMsg) {
-                    this.sending = false
-                    if(err) {
-                        this.error = err.toString()
-                    } else {
-                        this.error = null
-                        this.messages.push({
-                            id: resMsg.id,
-                            userId: resMsg.userId,
-                            message: picture,
-                            isImage: true
-                        });
-                    }
-                }).bind(this)) 
-            }
-        },
-        getBase64(file) {
-            /*
-             * resolve：処理が成功したときのメッセージを表示する関数
-             * reject：処理が失敗したときのメッセージを表示する関数
-             */
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader()
-                //resultにァイルのデータを表すURLが格納される
-                reader.readAsDataURL(file)
-
-                reader.onload = () => resolve(reader.result)
-                reader.onerror = error => reject(error)
-            })
-        },
-        checkFile(file) {
-            let result = true
-            const SIZE_LIMIT = 5000000 // 5MB
-            // キャンセルしたら処理中断
-            if (!file) {
-                result = false
-            }
-            // jpeg か png 関連ファイル以外は受付けない
-            if (file.type !== 'image/jpeg' && file.type !== 'image/jpg'　&& file.type !== 'image/png') {
-                result = false
-            }
-            // 上限サイズより大きければ受付けない
-            if (file.size > SIZE_LIMIT) {
-                result = false
-            }
-            return result
-        },
-        openModal: function(img) {
-            this.modalImg = img
-            this.isModalActive = true;
-        },
-        closeModal: function() {
-            modalImg = null
-            this.isModalActive = false;
-        }
-    },
-    computed: {
-        checkMyMessage: function() {
-            return function(userId) {
-                if(userId === myId) return "myMessage"
-                return
-            }    
-        }
+        
     }
 }
 
@@ -595,7 +774,16 @@ var router = new VueRouter({
         },
         {
             path: '/top',   //URLの指定。ファイル名#/topでアクセスできる。
-            component: Messages
+            component: TopMenu
+        },
+        {
+            path: '/illustration',
+            redirect: '/illustration/all',
+        },
+        {
+            path: '/illustration/:category', 
+            name: 'illustration',
+            component: Illustration,
         },
         {
             path: '/users',   //URLの指定。ファイル名#/usersでアクセスできる。
