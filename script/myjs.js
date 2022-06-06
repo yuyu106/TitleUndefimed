@@ -8,10 +8,9 @@ axios.interceptors.request.use(request => {
     return request
   })
 */
-var myId = 1
 
 var waitLoading = function(callback) {
-    setTimeout(function() {callback();}, 1000) 
+    setTimeout(function() {callback();}, 1200) 
 }
 
 //WebAPI経由で情報を取得したようにする
@@ -32,39 +31,46 @@ var getCategoryList = function(category, callback) {
     }
     setTimeout(function() {
         callback(result)
-    }, 1200)
+    }, 800)
 }
 //画像取得
-var getImages = function(category1, category2,  callback) {
+var getImages = async function(category1, category2,  callback) {
     var req = new XMLHttpRequest(); // HTTPでファイルを読み込むためのXMLHttpRrequestオブジェクトを生成
     req.open("get", "./config/imgInfo.csv", true); // アクセスするファイルを指定
     req.send(null); // HTTPリクエストの発行
     var result = [];
 
-    req.onload = function() {
-        //取得したCSVを配列に変換
-        result = convertCSVtoArray(req.responseText);
-        //カテゴリが一致する項目のみ取得
-        if(category2 === "all") {
-            result = result.filter(function(value) {
-                return value[4] == category1;  
-            }) 
-        } else {
-            result = result.filter(function(value) {
-                return (value[4] === category1 && value[6] === category2);  
+    var promise = new Promise(function(resolve) {
+        req.onload = function() {
+            //取得したCSVを配列に変換
+            result = convertCSVtoArray(req.responseText);
+            //カテゴリが一致する項目のみ取得
+            if(category2 === "all") {
+                result = result.filter(function(value) {
+                    return value[4] == category1;  
+                }) 
+            } else {
+                result = result.filter(function(value) {
+                    return (value[4] === category1 && value[6] === category2);  
+                })
+            }
+            //日付順で並び替え
+            result.sort(function(a,b){
+                if(a[3] < b[3]) return 1;
+                if(a[3] > b[3]) return -1;
+                return 0;
             })
+            resolve();
         }
-        //日付順で並び替え
-        result.sort(function(a,b){
-            if(a[3] < b[3]) return 1;
-            if(a[3] > b[3]) return -1;
-            return 0;
-        })
-    }
+    });
+    await promise;
+    //サムネイル画像追加
+    // for(let i = 0; i < result.length; i++) {
+    //     result[i][8] = await resizeImg(result[i][1])
+    // }
     setTimeout(function() {
-        console.log("result = " + result)
         callback(result)
-    }, 1200)
+    }, 800)
 }
 
 function convertCSVtoArray(str){ // 読み込んだCSVデータが文字列として渡される
@@ -80,6 +86,35 @@ function convertCSVtoArray(str){ // 読み込んだCSVデータが文字列と�
         });
     }
     return result;
+}
+//サムネイル用画像生成
+var resizeImg = async function(imgPath) {
+    //画像読み込み
+    var img = new Image();
+    img.src = imgPath;
+    var retImg = "";
+    var maxWidth = 400;
+    var promise = new Promise(function(resolve) {
+        img.onload = () => {
+            var width = img.width;
+            var height = img.height;
+            if(width > maxWidth) {
+                height = Math.round(height * maxWidth / width);
+                width = maxWidth;
+            }
+            let canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            console.log(canvas.width , canvas.height)
+            let ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            // canvasを画像に変換して出力
+            retImg = canvas.toDataURL("image/jpeg");
+            resolve();
+        };
+    })
+    await promise;
+    return retImg;
 }
 
 var getMessages = function(axios, callback) {
@@ -461,17 +496,20 @@ var Illustration = {
         '$route': 'fetchData'
     },
     methods: {
-        fetchData: function() {
+        fetchData: async function() {
             this.imageList = "";
+            this.selectedCategory = ""
             //ローディングアニメーションの表示
             this.loading = true
+            var compGetCategoryList = false
+            var compGetImages = false
             //ドロップダウンメニュー非表示
             this.checked = false;
             //カテゴリー取得
             var resCategoryList = [];
             getCategoryList("illustration", (function(res){
-                this.loading = false
-                this.displaying = true
+                //this.loading = false
+                //this.displaying = true
 
                 resCategoryList.push({
                     name: "All",
@@ -486,14 +524,23 @@ var Illustration = {
                 var selectedCategoryInfo = resCategoryList.find((v) => v.urlParams === this.$route.params.category)
                 this.categoryList = resCategoryList
                 this.selectedCategory = selectedCategoryInfo.name
+                compGetCategoryList = true
+                if(compGetCategoryList && compGetImages) {
+                    this.loading = false
+                    this.displaying = true
+                }
             }).bind(this));
             //画像取得
             var resImageList = [];
-            getImages("illustration", this.$route.params.category, (function(res){
-                this.loading = false
-                this.displaying = true
-                res.forEach(element => {
+
+            getImages("illustration", this.$route.params.category, (async function(res){
+                var itemNum = res.length
+                for(let i = 0; i < itemNum; i++) {
+                    element = res[i]
                     console.log(element);
+                    // 圧縮した画像を取得
+                    //var thumbnail = await resizeImg(element[1]);
+                    //console.log("thumbnail = " +  thumbnail);
                     resImageList.push({
                         idx: element[0],
                         path: element[1],
@@ -502,10 +549,18 @@ var Illustration = {
                         category1: element[4],
                         category2: element[5],
                         category3: element[6],
-                        detail: element[7]
+                        detail: element[7],
+                        thumbnail: element[8]
                     });
-                })
+                    console.log(i)
+                    console.log(itemNum)
+                }
                 this.imageList = resImageList;
+                compGetImages = true
+                if(compGetCategoryList && compGetImages) {
+                    this.loading = false
+                    this.displaying = true
+                }
             }).bind(this));
         },
 

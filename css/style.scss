@@ -291,6 +291,7 @@ header {
     color: $opera;
     text-align: center;
     margin: 32px 0 32px 0;
+    position: relative;
     .category-list {
         font-size: $main-font-size;
         width: 240px;
@@ -811,20 +812,20 @@ header {
 }
 
 /* トランジション用スタイル */
-.v-enter-active, .v-move {
-  transition: opacity 0.8s, transform 0.5s;
-}
-.v-leave-active {
-    transition: opacity 0.4s, transform 0.4s;
-  }
-.v-enter {
-    opacity: 0;
-    transform: translateX(-20px);
-  }
-.v-leave-to {
-  opacity: 0;
-  transform: translateX(-20px);
-}
+// .v-enter-active, .v-move {
+//   transition: opacity 0.8s, transform 0.5s;
+// }
+// .v-leave-active {
+//     transition: opacity 0.4s, transform 0.4s;
+//   }
+// .v-enter {
+//     opacity: 0;
+//     transform: translateX(-20px);
+//   }
+// .v-leave-to {
+//   opacity: 0;
+//   transform: translateX(-20px);
+// }
 .user-info-delay {
     .user-name-icon, .selectIconBackground, .user-detail-detail, .account, #user-info-user   {
         opacity: 0;

@@ -145,7 +145,9 @@
                     <div class="category">
                         <div class="category-arrow"><div><i class="fa-solid fa-caret-down"></i></div></div>
                         <input id="category-checkbox" class="category-checkbox" type="checkbox" v-model="checked">
-                        <label class="selected-category" for="category-checkbox">{{selectedCategory}}</label>
+                        <label class="selected-category" for="category-checkbox">
+                            <transition name="fade"><div v-if="selectedCategory">{{selectedCategory}}</div></transition>
+                        </label>
                         <ul class="category-list">
                             <li v-for="category in categoryList" class="category-list-item">
                                 <router-link :to="{name: 'illustration', params: {category: category.urlParams}}">{{category.name}}</router-link>
@@ -163,7 +165,7 @@
                         </div>
                         <!--ul class="illustration-list"-->
                             <transition-group name="fade"  tag="ul" class="illustration-list">
-                                <li v-for="image in imageList" :style="{backgroundImage: 'url(' + image.path + ')'}" :key="image.idx" class="illustration-item"></li>
+                                <li v-for="image in imageList" :style="{backgroundImage: 'url(' + image.thumbnail + ')'}" :key="image.idx" class="illustration-item"></li>
                             </transition-group>
                         <!--/ul-->
                     </div>
@@ -265,7 +267,7 @@
             </div>
         </div>
     </script>
-
+    <script type="module" src="./script/imageUtil.js"></script>
     <script src="./script/myjs.js"></script>
 
 
