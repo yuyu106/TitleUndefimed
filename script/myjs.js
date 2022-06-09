@@ -594,7 +594,6 @@ var Works = {
             this.isShownDescription = true;
         },
         closeModal: function() {
-            //this.modalImg = img
             this.isModalActive = false;
         },
         toggleDescription: function(){
