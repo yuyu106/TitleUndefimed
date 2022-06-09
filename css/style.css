@@ -174,14 +174,14 @@ header {
   .top-menu h3 {
     font-size: 24px;
     margin: 0;
-    margin-bottom: 16px; }
+    margin-bottom: 10px; }
   .top-menu h4 {
     font-size: 18px;
     margin: 0;
-    margin-bottom: 12px; }
+    padding: 6px 0; }
   .top-menu span {
     background: linear-gradient(#9E7360 0 0) bottom 0px left 50%/var(--a, 0) 1.5px no-repeat, linear-gradient(#9E7360 0 0) bottom 2px left 50%/var(--b, 0) 1.5px no-repeat;
-    transition: 0.5s;
+    transition: 0.4s;
     padding: 0 2px 2px 2px; }
   .top-menu h4:hover span {
     --b: 100%; }
@@ -208,12 +208,14 @@ header {
   color: #9E7360;
   text-align: center;
   margin: 32px 0 32px 0;
-  position: relative; }
+  position: relative;
+  font-family: 'Josefin Sans', sans-serif; }
   .category .category-list {
-    font-size: 16px;
+    font-size: 18px;
     width: 240px;
     border-radius: 8px;
     z-index: 5000;
+    padding: 8px 0 2px 0;
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
@@ -222,14 +224,19 @@ header {
     background-color: rgba(255, 255, 255, 0);
     opacity: 0;
     visibility: hidden;
-    transition: .5s all; }
+    transition: .4s all; }
     .category .category-list .category-list-item {
-      padding: 4px 0 4px 0;
       width: 100%; }
     .category .category-list a {
       color: #9E7360;
       display: inline-block;
-      width: 100%; }
+      padding: 4px 40px 4px 40px; }
+      .category .category-list a span {
+        background: linear-gradient(#EFC36E 0 0) bottom 2px left 50%/var(--b, 0) 1.5px no-repeat;
+        transition: 0.4s;
+        padding: 0 2px 2px 2px; }
+    .category .category-list a:hover span {
+      --b: 100%; }
   .category .selected-category {
     width: 100%;
     height: 32px;
@@ -239,7 +246,7 @@ header {
   .category .category-arrow {
     display: inline-block;
     width: 160px;
-    height: 32px;
+    height: 26px;
     font-size: 16px;
     text-align: end;
     z-index: -10;
@@ -257,7 +264,7 @@ header {
   .category .category-checkbox {
     display: none; }
   .category .category-checkbox:checked + .selected-category + .category-list {
-    background-color: rgba(255, 255, 255, 0.8);
+    background-color: rgba(255, 255, 255, 0.9);
     opacity: 100;
     visibility: visible; }
 
@@ -269,16 +276,30 @@ header {
       padding: 0 80px; } }
   .menu-and-illust .category-menu {
     flex-grow: 1;
-    width: 200px;
-    text-align: left; }
-    .menu-and-illust .category-menu h3 {
+    width: 160px;
+    text-align: left;
+    font-family: 'Josefin Sans', sans-serif;
+    font-weight: 400; }
+    .menu-and-illust .category-menu .category-menu-title {
       color: #9E7360;
       margin: 0;
-      padding: 0 0 8px 0; }
+      padding: 0 0 8px 0;
+      font-size: 24px;
+      font-weight: 400;
+      text-transform: capitalize; }
     .menu-and-illust .category-menu .category-menu-item {
       text-align: left;
-      font-size: 18px;
-      padding: 8px 0; }
+      padding: 8px 0;
+      font-size: 18px; }
+      .menu-and-illust .category-menu .category-menu-item a {
+        display: inline-block;
+        width: 70%; }
+        .menu-and-illust .category-menu .category-menu-item a span {
+          background: linear-gradient(#9E7360 0 0) bottom 2px left 0%/var(--b, 0) 1.5px no-repeat;
+          transition: 0.4s;
+          padding: 0 0px 2px 0px; }
+      .menu-and-illust .category-menu .category-menu-item a:hover span {
+        --b: 100%; }
     @media (max-width: 549px) {
       .menu-and-illust .category-menu {
         display: none; } }
@@ -313,6 +334,94 @@ header {
       content: "";
       display: block;
       padding-top: 100%; }
+
+.modal {
+  background-color: rgba(255, 255, 255, 0.9);
+  position: fixed;
+  box-sizing: border-box;
+  height: 100vh;
+  width: 100vw;
+  top: 0;
+  left: 0; }
+  .modal .close-modal {
+    width: 40px;
+    height: 40px;
+    background-color: rgba(255, 255, 255, 0.6);
+    border-radius: 8px;
+    position: absolute;
+    z-index: 1000;
+    top: 2.5%;
+    left: 2.5%;
+    transition: all .4s; }
+    @media (max-width: 549px) {
+      .modal .close-modal {
+        left: 4px; } }
+    .modal .close-modal i {
+      color: #9E7360;
+      font-size: 24px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      -webkit-transform: translate(-50%, -50%);
+      -ms-transform: translate(-50%, -50%); }
+  .modal .close-modal:hover {
+    background-color: rgba(239, 195, 110, 0.6); }
+  .modal .modal-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap; }
+    .modal .modal-inner .image-wrapper {
+      position: relative;
+      width: 100%;
+      height: 100%; }
+    .modal .modal-inner img {
+      max-height: 90%;
+      max-width: 90%;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      -webkit-transform: translate(-50%, -50%);
+      -ms-transform: translate(-50%, -50%); }
+      @media (max-width: 549px) {
+        .modal .modal-inner img {
+          max-height: 100%;
+          max-width: 100%; } }
+    .modal .modal-inner .image-description {
+      background-color: rgba(255, 255, 255, 0.8);
+      min-height: 15%;
+      width: 100%;
+      position: absolute;
+      bottom: 0px;
+      padding: 8px 5% 20px 5%;
+      box-sizing: border-box;
+      text-align: center;
+      font-size: 16px; }
+      @media (max-width: 549px) {
+        .modal .modal-inner .image-description {
+          padding: 8px 8px 20px 8px; } }
+      .modal .modal-inner .image-description .tag_day {
+        font-family: 'Josefin Sans', sans-serif;
+        color: #9E7360;
+        mix-blend-mode: multiply;
+        max-width: 100%;
+        width: 480px;
+        padding-bottom: 8px;
+        display: inline-block;
+        position: relative; }
+        .modal .modal-inner .image-description .tag_day .tag, .modal .modal-inner .image-description .tag_day .day {
+          font-size: 18px;
+          display: inline-block;
+          padding: 0px 24px;
+          box-sizing: border-box; }
+      .modal .modal-inner .image-description .description p {
+        padding: 0;
+        margin: 0; }
 
 .messages .messages-inner .message {
   display: flex;

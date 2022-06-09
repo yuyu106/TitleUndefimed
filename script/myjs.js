@@ -9,8 +9,8 @@ axios.interceptors.request.use(request => {
   })
 */
 
-var waitLoading = function(callback) {
-    setTimeout(function() {callback();}, 1200) 
+var waitLoading = function(callback, wait) {
+    setTimeout(function() {callback();}, wait) 
 }
 
 //WebAPI経由で情報を取得したようにする
@@ -31,7 +31,7 @@ var getCategoryList = function(category, callback) {
     }
     setTimeout(function() {
         callback(result)
-    }, 800)
+    }, 1000)
 }
 //画像取得
 var getImages = async function(category1, category2,  callback) {
@@ -70,7 +70,7 @@ var getImages = async function(category1, category2,  callback) {
     // }
     setTimeout(function() {
         callback(result)
-    }, 800)
+    }, 1000)
 }
 
 function convertCSVtoArray(str){ // 読み込んだCSVデータが文字列として渡される
@@ -81,9 +81,11 @@ function convertCSVtoArray(str){ // 読み込んだCSVデータが文字列と�
     //ヘッダー行は除外
     for(var i=1;i<tmp.length;++i){
         result[i] = tmp[i].split("\",\"");
-        result[i].forEach((e, idx) => {
-            result[i][idx] = e.replace("\"", "");
-        });
+        // result[i].forEach((e, idx) => {
+        //     result[i][idx] = e.replace("\"", "");
+        // });
+        result[i][0] = result[i][0].substr(1);
+        result[i][result[i].length - 1] = result[i][result[i].length - 1].substr(0, result[i][result[i].length - 1].length - 1);
     }
     return result;
 }
@@ -465,30 +467,34 @@ var TopMenu = {
             waitLoading((function() {
                 this.loading = false
                 this.displaying = true
-            }).bind(this))
+            }).bind(this), 1000)
             
         }
     }
 }
 
 /******************
-  イラスト表示ページ
+  画像表示ページ
 *******************/
-var Illustration = {
-    template: '#illustration',
+var Works = {
+    template: '#images',
     data: function() {
         return {
             loading: false,
             displaying: false,
-            selectedCategory: "",
+            selectedCategory1: "",
+            selectedCategory2: "",
             categoryList: "",
             imageList: "",
             checked: false,
+            isModalActive: false,
+            modalInfo: "",
+            isShownDescription: true,
             error: null,
         }
     },
     //初期化時にデータを取得
-    created: function() {
+    created: async function() {
         this.displaying = false;
         this.fetchData()
     },
@@ -498,42 +504,60 @@ var Illustration = {
     methods: {
         fetchData: async function() {
             this.imageList = "";
-            this.selectedCategory = ""
-            //ローディングアニメーションの表示
-            this.loading = true
+            this.selectedCategory2 = ""
             var compGetCategoryList = false
             var compGetImages = false
+            var compWaitLoading = false
+            if(!this.displaying){
+                waitLoading((function(){
+                    compWaitLoading = true
+                    if(compGetCategoryList && compGetImages && compWaitLoading) {
+                        this.loading = false
+                        this.displaying = true
+                    }
+                }).bind(this), 1500)
+            } else {
+                compWaitLoading = true
+                if(compGetCategoryList && compGetImages && compWaitLoading) {
+                    this.loading = false
+                    this.displaying = true
+                }
+            }
+            //ローディングアニメーションの表示
+            this.loading = true
             //ドロップダウンメニュー非表示
             this.checked = false;
             //カテゴリー取得
             var resCategoryList = [];
-            getCategoryList("illustration", (function(res){
+            getCategoryList(this.$route.params.category1, (function(res){
                 //this.loading = false
                 //this.displaying = true
 
                 resCategoryList.push({
                     name: "All",
-                    urlParams: "all"
+                    urlParams1: this.$route.params.category1,
+                    urlParams2: "all"
                 });
                 res.forEach(element => {
                     resCategoryList.push({
                         name: element[1],
-                        urlParams: element[2]
+                        urlParams1: this.$route.params.category1,
+                        urlParams2: element[2]
                     });
                 })
-                var selectedCategoryInfo = resCategoryList.find((v) => v.urlParams === this.$route.params.category)
+                var selectedCategoryInfo = resCategoryList.find((v) => v.urlParams2 === this.$route.params.category2)
                 this.categoryList = resCategoryList
-                this.selectedCategory = selectedCategoryInfo.name
+                this.selectedCategory1 = this.$route.params.category1
+                this.selectedCategory2 = selectedCategoryInfo.name
                 compGetCategoryList = true
-                if(compGetCategoryList && compGetImages) {
+                if(compGetCategoryList && compGetImages && compWaitLoading) {
                     this.loading = false
                     this.displaying = true
                 }
             }).bind(this));
             //画像取得
             var resImageList = [];
-
-            getImages("illustration", this.$route.params.category, (async function(res){
+            getImages(this.$route.params.category1, this.$route.params.category2, (async function(res){
                 var itemNum = res.length
                 for(let i = 0; i < itemNum; i++) {
                     element = res[i]
@@ -557,25 +581,28 @@ var Illustration = {
                 }
                 this.imageList = resImageList;
                 compGetImages = true
-                if(compGetCategoryList && compGetImages) {
+                if(compGetCategoryList && compGetImages && compWaitLoading) {
                     this.loading = false
                     this.displaying = true
                 }
             }).bind(this));
         },
 
-
-         // トランジション開始でインデックス*100ms分のディレイを付与
-        beforeEnter: function(el) {
-            el.style.transitionDelay = 100 * parseInt(el.dataset.index, 10) + 'ms'
+        openModal: function(imgInfo) {
+            this.modalInfo = imgInfo;
+            this.isModalActive = true;
+            this.isShownDescription = true;
         },
-        // トランジション完了またはキャンセルでディレイを削除
-        afterEnter(el) {
-            el.style.transitionDelay = ''
+        closeModal: function() {
+            //this.modalImg = img
+            this.isModalActive = false;
         },
-        
+        toggleDescription: function(){
+            this.isShownDescription = !this.isShownDescription
+        }
     }
 }
+
 
 var UserList = {
     template: '#user-list',
@@ -832,13 +859,18 @@ var router = new VueRouter({
             component: TopMenu
         },
         {
-            path: '/illustration',
-            redirect: '/illustration/all',
+            path: '/works',
+            redirect: '/top',
         },
         {
-            path: '/illustration/:category', 
-            name: 'illustration',
-            component: Illustration,
+            path: '/works/:category1',
+            redirect: 'works/:category1/all',
+        },
+        {
+            //path: '/illustration/:category', 
+            path: '/works/:category1/:category2', 
+            name: 'works',
+            component: Works,
         },
         {
             path: '/users',   //URLの指定。ファイル名#/usersでアクセスできる。

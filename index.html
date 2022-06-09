@@ -54,16 +54,16 @@
                     <nav><div class="top-menu">
                         <div class="top-menu-category">
                             <h3>Illustration</h3>
-                            <router-link to="/illustration/all"><h4><span>All</span></h4></router-link>
-                            <router-link to="/illustration/beast"><h4><i class="fa-solid fa-paw"></i> <span>BEA*TR*IL</span> <i class="fa-solid fa-paw"></i></h4></router-link>
-                            <router-link to="/illustration/dns"><h4><span>#dans*i</span></h4></router-link>
-                            <router-link to="/illustration/dny"><h4><i class="fa-brands fa-fort-awesome"></i> <span>Disn*y</span> <i class="fa-solid fa-volcano"></i></h4></router-link>
-                            <router-link to="/illustration/original"><h4><span>Original</span></h4></router-link>
+                            <router-link :to="{name: 'works', params: {category1: 'illustration', category2: 'all'}}"><h4><span>All</span></h4></router-link>
+                            <router-link :to="{name: 'works', params: {category1: 'illustration', category2: 'beast'}}"><h4><i class="fa-solid fa-paw"></i> <span>BEA*TR*IL</span> <i class="fa-solid fa-paw"></i></h4></router-link>
+                            <router-link :to="{name: 'works', params: {category1: 'illustration', category2: 'dns'}}"><h4><span>#dans*i</span></h4></router-link>
+                            <router-link :to="{name: 'works', params: {category1: 'illustration', category2: 'dny'}}"><h4><i class="fa-brands fa-fort-awesome"></i> <span>Disn*y</span> <i class="fa-solid fa-volcano"></i></h4></router-link>
+                            <router-link :to="{name: 'works', params: {category1: 'illustration', category2: 'original'}}"><h4><span>Original</span></h4></router-link>
                         </div>
-                        <div class="top-menu-category">
+                        <!-- <div class="top-menu-category">
                             <h3>Photo</h3>
-                            <router-link to="/top"><h4><span>All</span></h4></router-link>
-                        </div>
+                            <router-link :to="{name: 'works', params: {category1: 'photo', category2: 'all'}}"><h4><span>All</span></h4></router-link>
+                        </div> -->
                         <div class="top-menu-category">
                             <router-link to="/users"><h3>About</h3></router-link>
                             <router-link to="/top"><h4><span>Profile</span></h4></router-link>
@@ -132,8 +132,8 @@
 
         </div>
     </script>
-    <!--イラストページ-->
-    <script type="text/x-template" id="illustration">
+    <!--画像表示ページ-->
+    <script type="text/x-template" id="images">
         <div class="main">
             <transition name="fade"><div class="loading" v-if="loading">
                 <div class="loader_wrappar"><div class="loader-left"></div></div>
@@ -146,28 +146,44 @@
                         <div class="category-arrow"><div><i class="fa-solid fa-caret-down"></i></div></div>
                         <input id="category-checkbox" class="category-checkbox" type="checkbox" v-model="checked">
                         <label class="selected-category" for="category-checkbox">
-                            <transition name="fade"><div v-if="selectedCategory">{{selectedCategory}}</div></transition>
+                            <transition name="fade"><div v-if="selectedCategory2">{{selectedCategory2}}</div></transition>
                         </label>
                         <ul class="category-list">
                             <li v-for="category in categoryList" class="category-list-item">
-                                <router-link :to="{name: 'illustration', params: {category: category.urlParams}}">{{category.name}}</router-link>
+                                <router-link :to="{name: 'works', params: {category1: category.urlParams1, category2: category.urlParams2}}"><span>{{category.name}}</span></router-link>
                             </li>
                         </ul>
                     </div>
                     <div class="menu-and-illust">
                         <div class="category-menu">
-                            <h3>Illustration</h3>
+                            <h3 class="category-menu-title">{{selectedCategory1}}</h3>
                             <ul class="category-menu-list">
                                 <li v-for="category in categoryList" class="category-menu-item">
-                                    <router-link :to="{name: 'illustration', params: {category: category.urlParams}}">{{category.name}}</router-link>
+                                    <router-link :to="{name: 'works', params: {category1: category.urlParams1, category2: category.urlParams2}}"><span>{{category.name}}</span></router-link>
                                 </li>
                             </ul>
                         </div>
-                        <!--ul class="illustration-list"-->
-                            <transition-group name="fade"  tag="ul" class="illustration-list">
-                                <li v-for="image in imageList" :style="{backgroundImage: 'url(' + image.thumbnail + ')'}" :key="image.idx" class="illustration-item"></li>
-                            </transition-group>
-                        <!--/ul-->
+                        <transition-group name="fade"  tag="ul" class="illustration-list">
+                            <li v-for="image in imageList" :style="{backgroundImage: 'url(' + image.thumbnail + ')'}" :key="image.idx" class="illustration-item" @click="openModal(image)"></li>
+                        </transition-group>
+                    </div>
+                </div>
+            </div></transition>
+            <transition name="fade"><div class='modal' v-if="isModalActive">
+                <div class="modal-inner">
+                    <transition name="fade"><div class="close-modal" @click="closeModal()" v-if="isShownDescription"><i class="fa-solid fa-xmark"></i></div></transition>
+                    <div class="image-wrapper">
+                        <img :src="modalInfo.path" @click="toggleDescription()">
+                        <!-- <img src="/image/illustration/beast/20220430.jpg"> -->
+                        <transition name="fade"><div class="image-description" v-if="isShownDescription">
+                            <div class="tag_day">
+                                <div class="tag">{{modalInfo.category2}}</div>
+                                <div class="day">{{modalInfo.day}}</div>
+                            </div>
+                            <div class="description">
+                                {{modalInfo.detail}}
+                            </div>
+                        </div></transition>
                     </div>
                 </div>
             </div></transition>
@@ -269,11 +285,5 @@
     </script>
     <script type="module" src="./script/imageUtil.js"></script>
     <script src="./script/myjs.js"></script>
-
-
-    
-
-
-
 </body>
 </html>
